@@ -2,18 +2,24 @@
 # currently.
 
 class Player:
-    def __init__(self, name, hp, mp, level, inventory, location):
+    def __init__(self, name, hp, mp, level, location):
         self.name = name
         self.hp = hp
         self.mp = mp
         self.level = level
-        self.inventory = inventory
+        self.inventory = []
         self.location = location
     def move_room(self, direction):
         new_room = self.location.__getattribute__(f"{direction}_to")
         if new_room:
             self.location = new_room
+        else:
+            print("Invalid direction")
     def __str__(self):
-        return f"Name: {self.name}\nHealth/Mana: {self.hp}/{self.mp}\nLevel: {self.level}\nItems: {self.inventory}\nZone: {self.location}"
-    def pick_item(self, item):
-        self.inventory.append(item)
+        display_inven = []
+        for x in self.inventory:
+            display_inven.append(x.name)
+        return f"Name: {self.name}\nHealth/Mana: {self.hp}/{self.mp}\nLevel: {self.level}\nItems: {display_inven}\nZone: {self.location}"
+    def pick_up_item(self, item):
+            self.inventory.append(item)
+        # when added to inventory, also remove from room

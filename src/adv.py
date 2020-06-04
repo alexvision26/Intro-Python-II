@@ -5,12 +5,17 @@ import os
 
 # Declare all the rooms..
 
+iron_dagger = Item("Iron Dagger", "Pointy!")
+wizard_staff = Item("Wizard Staff", "A large wooden staff with a magical aura!")
+wooden_plank = Item("Wooden Plank", "A wooden plank. Maybe this can help me cross the chasm...")
+family_crest_ring = Item("Family Crest Signet Ring", "This looks important... It appears someone may have dropped this accidentally.")
+
 room = {
     'outside':  Room("Outside Cave Entrance",
-                     "North of you, the cave mount beckons"),
+                     "North of you, the cave mount beckons", [wooden_plank]),
 
     'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
-passages run north and east."""),
+passages run north and east.""", [iron_dagger]),
 
     'overlook': Room("Grand Overlook", """A steep cliff appears before you, falling
 into the darkness. Ahead to the north, a light flickers in
@@ -21,7 +26,9 @@ to north. The smell of gold permeates the air."""),
 
     'treasure': Room("Treasure Chamber", """You've found the long-lost treasure
 chamber! Sadly, it has already been completely emptied by
-earlier adventurers. The only exit is to the south."""),
+earlier adventurers. The only exit is to the south.""", [wooden_plank]),
+
+    'tunnel': Room("Dimly Lit Tunnel", "You've crossed the dark chasm. Ahead to the north lies a narrow, dimly lit tunnel.")
 }
 
 
@@ -31,10 +38,14 @@ room['outside'].n_to = room['foyer']
 room['foyer'].s_to = room['outside']
 room['foyer'].n_to = room['overlook']
 room['foyer'].e_to = room['narrow']
+
 room['overlook'].s_to = room['foyer']
+
 room['narrow'].w_to = room['foyer']
 room['narrow'].n_to = room['treasure']
 room['treasure'].s_to = room['narrow']
+
+# room['overlook'].n_to = room['tunnel']
 
 #
 # Main
@@ -59,8 +70,6 @@ room['treasure'].s_to = room['narrow']
 def clear():
     os.system('cls')
 
-iron_dagger = Item("Iron Dagger", "Pointy!")
-
 intro = False
 act1 = False
 act2 = False
@@ -76,7 +85,7 @@ elif start in ['n', 'N']:
 
 while intro == True:
     name = input("Welcome to your first quest! What is your name, traveler?\nEnter your name: ")
-    new_char = Player(name.capitalize(), 100, 100, 1, [], room['outside'])
+    new_char = Player(name.capitalize(), 100, 100, 1, room['outside'])
     clear()
     print("Here is a look at your stats:\n")
     print(new_char.__str__())
@@ -94,13 +103,36 @@ while intro == True:
         clear()
     while act1 == True:
         print("You enter the",new_char.location)
-        next_move = input("Which direction will you go? ")
+        next_move = input("\nWhich direction will you go? \nControls available:\nDirections: N / E / S / W\nSearch room: L\nView your stats: P\nQuit game: Q\nWhere would you like to go? ")
         if next_move in ['n','s','e', 'w']:
             clear()
             new_char.move_room(next_move)
+        elif next_move in ['l', 'L']:
+            clear()
+            print('You begin searching around the room...')
+            if len(new_char.location.items) > 0:
+                new_char.location.curr_items()
+                take_items = input('Take items? Y/N ')
+                if take_items in ['y','Y']:
+                    for x in new_char.location.items: new_char.pick_up_item(x)
+                    input('Press enter to continue...')
+            else:
+                input("Couldn't find any items in current room. Press enter to continue...")
+                clear()
+        elif next_move in ['p','P']:
+            clear()
+            print("Here is a look at your stats:\n")
+            print(new_char.__str__())
+            input("Press enter to continue...")
+            clear()
+        elif next_move in ['q', 'Q']:
+            intro = False
+            act1= False
+            clear()
+            print("Thanks for playing!")
         else:
             print("Not a valid direction.")
-            input("Press enter to return to the last checkpoint! ")
+            input("Press enter to return to the last checkpoint...")
 
 
 # while intro == True:

@@ -14,6 +14,7 @@ class Room:
         return f"{self.room}: {self.desc}."
     def curr_items(self):
         print("You find:")
-        for x in self.items: print(x.name)
-    def remove_items(self):
-        for x in self.items: self.items.pop(x)
+        # for x in self.items: print(x.name)
+        print(self.items[0].name)
+    def remove_item(self):
+        self.items.pop(0)

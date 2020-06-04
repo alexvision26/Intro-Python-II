@@ -14,7 +14,7 @@ class Player:
         if new_room:
             self.location = new_room
         else:
-            print("Invalid direction")
+            print("There is no path in that direction.")
     def __str__(self):
         display_inven = []
         for x in self.inventory:
@@ -22,4 +22,7 @@ class Player:
         return f"Name: {self.name}\nHealth/Mana: {self.hp}/{self.mp}\nLevel: {self.level}\nItems: {display_inven}\nZone: {self.location}"
     def pick_up_item(self, item):
             self.inventory.append(item)
+
+            if len(self.inventory) > 1:
+                self.level += 1
         # when added to inventory, also remove from room

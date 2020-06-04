@@ -8,6 +8,7 @@ import os
 iron_dagger = Item("Iron Dagger", "Pointy!")
 wizard_staff = Item("Wizard Staff", "A large wooden staff with a magical aura!")
 wooden_plank = Item("Wooden Plank", "A wooden plank. Maybe this can help me cross the chasm...")
+wooden_shield = Item("Wooden Shield", "Slightly damaged, but solid shield made out of wood.")
 family_crest_ring = Item("Family Crest Signet Ring", "This looks important... It appears someone may have dropped this accidentally.")
 
 room = {
@@ -15,7 +16,7 @@ room = {
                      "North of you, the cave mount beckons", [wooden_plank]),
 
     'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
-passages run north and east.""", [iron_dagger]),
+passages run north and east.""", [iron_dagger, wooden_shield]),
 
     'overlook': Room("Grand Overlook", """A steep cliff appears before you, falling
 into the darkness. Ahead to the north, a light flickers in
@@ -28,7 +29,7 @@ to north. The smell of gold permeates the air."""),
 chamber! Sadly, it has already been completely emptied by
 earlier adventurers. The only exit is to the south.""", [wooden_plank]),
 
-    'tunnel': Room("Dimly Lit Tunnel", "You've crossed the dark chasm. Ahead to the north lies a narrow, dimly lit tunnel.")
+    'tunnel': Room("Dark Chasm", "You've crossed the dark chasm with the wooden planks. You barely make it as the planks fall into the abyss. Ahead to the north lies a narrow, dimly lit tunnel.")
 }
 
 
@@ -70,11 +71,14 @@ room['treasure'].s_to = room['narrow']
 def clear():
     os.system('cls')
 
+unlock = True
+
 intro = False
 act1 = False
 act2 = False
 act3 = False
 act4 = False
+
 start = input("Would you like to begin your journey? Y/N ")
 clear()
 if start in ['y', 'Y']:
@@ -103,7 +107,15 @@ while intro == True:
         clear()
     while act1 == True:
         print("You enter the",new_char.location)
-        next_move = input("\nWhich direction will you go? \nControls available:\nDirections: N / E / S / W\nSearch room: L\nView your stats: P\nQuit game: Q\nWhere would you like to go? ")
+        next_move = input("\nWhich direction will you go? \nControls available:\nDirections: N / E / S / W\nSearch room: L\nView your stats: P\nQuit: Q\nWhere would you like to go? ")
+        #Check here if player inventory includes 2 planks to cross chasm, then allow north travel across chasm:
+        has_planks = [p.name for p in new_char.inventory]
+        if has_planks.count("Wooden Plank") == 2:
+            if unlock == True:
+                clear()
+                input("I could use these planks to cross the chasm!\nPress Enter to continue...")
+                unlock = False
+            room['overlook'].n_to = room['tunnel']
         if next_move in ['n','s','e', 'w']:
             clear()
             new_char.move_room(next_move)
@@ -114,8 +126,11 @@ while intro == True:
                 new_char.location.curr_items()
                 take_items = input('Take items? Y/N ')
                 if take_items in ['y','Y']:
-                    for x in new_char.location.items: new_char.pick_up_item(x)
+                    for x in new_char.location.items:
+                        new_char.pick_up_item(x)
+                        new_char.location.remove_item()
                     input('Press enter to continue...')
+                    clear()
             else:
                 input("Couldn't find any items in current room. Press enter to continue...")
                 clear()
@@ -133,47 +148,3 @@ while intro == True:
         else:
             print("Not a valid direction.")
             input("Press enter to return to the last checkpoint...")
-
-
-# while intro == True:
-#     name = input("Welcome to your first quest! What is your name, traveler?\nName: ")
-#     new_char = Player(name.capitalize(), 100, 100, 1, ["Iron Dagger"], room['outside'])
-#     print(new_char.location)
-#     input("Press enter to see your stats... \r")
-#     clear()
-#     print("\nHere's a look at your current stats:\n" + new_char.__str__())
-#     pt1 = input("Enter the cave?: Y/N ")
-#     if pt1 == "Y" or "y":
-#         intro = False
-#         act1 = True
-#     elif pt1 == "N" or "n":
-#         print("Game over.")
-#         intro = False
-#     else:
-#         input("Invalid input. Press enter to return...")
-# while act1 == True:
-#         new_char.location = room['outside'].n_to
-#         print("You enter the cave, ready to face what lies ahead...")
-#         print("You are now in the", new_char.location, ".")
-#         next_move = input("Which way will you go...? ")
-#         if next_move in ['n','s','e', 'w']:
-#             new_char.move_room(next_move)
-#             print(new_char.location)
-#             input("test")
-#         else:
-#             print("Not a valid direction.")
-#             input("Press enter to return to the last checkpoint! ")
-
-# Finding an item script
-# print('You find the remains of a fallen adventurer and a small, iron dagger.')
-#             get_item = input('Pick up the iron dagger? Y/N ')
-#             if get_item in ['y','Y']:
-#                 new_char.pick_item(iron_dagger.name)
-#                 input("Press enter to view your inventory")
-#                 clear()
-#                 print(new_char.__str__())
-#                 input("Press enter to continue...")
-#                 clear()
-#             elif get_item in ['n', 'N']:
-#                 input("You leave the dagger. Press enter to continue...")
-#                 clear()
